@@ -1,32 +1,40 @@
 ---
-title: "Micro-Project Review: Computational Implementation of Real-Time Optimization Problems"
+title: "Computational Implementation of Real-Time Optimization in Campus Logistics Networks"
 author: "Akshay Joseph"
 format: 
   pdf: 
     toc: true
-    number-sections: false
+    number-sections: true
     colorlinks: true
+    geometry: "margin=1in"
   html:
     toc: true
     theme: cosmo
+    number-sections: true
 ---
 
 **Course:** 24MAT382 - Computational Optimization and Applications  
-**Institution:** Department of Mathematics, Saintgits College of Engineering (Autonomous)  
+**Institution:** Saintgits College of Engineering (Autonomous)  
 
 ---
 
-## 1. Problem Statement
+**Abstract** Inefficient ad-hoc distribution systems in large institutional campuses lead to inflated operational costs and supply chain vulnerabilities. This paper presents a computational approach to optimizing the emergency supply distribution network for Campus City Logistics. A Mixed-Integer Linear Programming (MILP) model was formulated to select optimal warehouse locations and map distribution routes across six critical campus facilities. To ensure real-world applicability, geographic facility coordinates were mapped, and transportation costs were dynamically calculated utilizing the Haversine formula to reflect true physical distances. The computational model, executed via Python's `pulp` library, successfully identified a globally optimal, redundant dual-warehouse distribution plan. The optimized network satisfies 100% of campus demand while operating at a total annual cost of \$950,552.75, representing a highly efficient utilization of resources safely below the \$1.5 million operational budget ceiling. 
 
-Campus City Logistics currently relies on an inefficient, ad-hoc system to distribute essential resources across campus facilities. The objective of this project is to design an optimal supply distribution network by selecting warehouse locations and creating a routing plan that minimizes total annual costs.
+**Keywords:** *Mixed-Integer Linear Programming (MILP), Supply Chain Optimization, Python, Haversine Formula, Geographic Information Systems (GIS), Logistics.*
 
-The system must reliably supply 270 units daily across six critical campus facilities (Medical Center, Engineering Building, Science Hall, North Dormitory, South Dormitory, and Main Library). To ensure redundancy, exactly two of the three available warehouses (North, South, East) must be selected. The solution must respect the maximum capacity of the chosen warehouses and ensure that the total annualized cost—including amortized construction, daily operations, and transportation—does not exceed a strict budget of $1,500,000.
+---
+
+## 1. Introduction
+
+Institutional logistics networks frequently suffer from inefficiencies caused by decentralized planning and a failure to mathematically optimize routing and storage capacities. The objective of this study is to design an optimal, highly constrained supply distribution network that minimizes total annualized costs while guaranteeing supply redundancy.
+
+The system in question must reliably supply 270 units daily across six critical campus facilities (Medical Center, Engineering Building, Science Hall, North Dormitory, South Dormitory, and Main Library). To safeguard against single points of failure, the network requires strict redundancy: exactly two of three available candidate warehouses (North, South, East) must be activated. The proposed mathematical solution must respect the individual maximum capacities of the chosen warehouses and ensure that the total annualized network cost—comprising amortized construction, daily operations, and geographic transportation costs—does not exceed a strict budgetary threshold of \$1,500,000.
 
 ## 2. Mathematical Formulation
 
-The scenario is modeled as a Mixed-Integer Linear Programming (MILP) problem.
+The logistical scenario is modeled as a Mixed-Integer Linear Programming (MILP) problem. This approach allows for the simultaneous evaluation of discrete binary decisions (warehouse activation) and continuous volume flows (supply distribution). 
 
-### Sets and Parameters
+### 2.1 Sets and Parameters
 
 * $I$: Set of candidate warehouses $\{1, 2, 3\}$ representing North, South, and East.
 * $J$: Set of campus facilities $\{1, 2, 3, 4, 5, 6\}$.
@@ -36,19 +44,19 @@ The scenario is modeled as a Mixed-Integer Linear Programming (MILP) problem.
 * $O_i$: Daily operational cost of warehouse $i$.
 * $T_{ij}$: Transportation cost per unit from warehouse $i$ to facility $j$.
 
-### Decision Variables 
+### 2.2 Decision Variables 
 
 * $y_i \in \{0, 1\}$: A binary variable equaling $1$ if warehouse $i$ is selected, and $0$ otherwise.
 * $X_{ij} \ge 0$: A continuous, non-negative variable representing the total annual units shipped from warehouse $i$ to facility $j$.
 
-### Objective Function 
+### 2.3 Objective Function 
 
-Minimize total annual network cost ($Z$):
+The primary objective is to minimize the total annual network cost ($Z$):
 $$
 \text{Minimize } Z = \sum_{i \in I} \left( \frac{F_i}{10} + 365 \cdot O_i \right) y_i + \sum_{i \in I} \sum_{j \in J} T_{ij} X_{ij}
 $$
 
-### Constraints 
+### 2.4 System Constraints 
 
 **Redundancy Constraint:** Exactly two warehouses must be selected.
 $$
@@ -60,46 +68,51 @@ $$
 \sum_{i \in I} X_{ij} = 365 \cdot D_j \quad \forall j \in J
 $$
 
-**Capacity Constraint:** Shipments from a warehouse cannot exceed its annual capacity.
+**Capacity Constraint:** Shipments from a warehouse cannot exceed its annual capacity. The inclusion of the binary variable enforces a zero-flow state for unselected warehouses.
 $$
 \sum_{j \in J} X_{ij} \le 365 \cdot C_i \cdot y_i \quad \forall i \in I
 $$
 
-**Budget Constraint:** Total annual cost cannot exceed $1,500,000.
+**Budget Constraint:** Total annual cost cannot exceed \$1,500,000.
 $$
 \sum_{i \in I} \left( \frac{F_i}{10} + 365 \cdot O_i \right) y_i + \sum_{i \in I} \sum_{j \in J} T_{ij} X_{ij} \le 1500000
 $$
 
-## 3. Methodology
+## 3. Computational Methodology
 
-This project implements the mathematical model computationally using Python, specifically relying on `pulp` and `pandas`. A Mixed-Integer Linear Programming (MILP) solver was chosen because the problem combines discrete binary logic (opening/closing a warehouse) with continuous flows (supply volumes). Unlike greedy algorithms, a MILP solver mathematically guarantees finding the global minimum cost while strictly enforcing capacity and budget constraints.
+This study implements the mathematical model computationally using Python, specifically relying on the `pandas` library for data ingestion and the `pulp` optimization modeling framework. A MILP solver was chosen over heuristic or greedy algorithms because it mathematically guarantees the identification of the global minimum cost while strictly enforcing all capacity and budgetary constraints simultaneously.
 
-Furthermore, the `folium` library was utilized to translate the mathematical output into a dynamic, interactive geographic visualization, proving the spatial logic of the optimized routing map.
+To ensure the model reflects physical reality, facility and warehouse coordinates were mapped geographically. Transportation costs ($T_{ij}$) were dynamically calculated using the Haversine formula to determine the true great-circle distance between nodes. Furthermore, the `folium` library was utilized to translate the mathematical outputs into a dynamic, interactive geographic visualization, verifying the spatial logic of the optimized routing matrix.
 
 ## 4. Results & Analysis
 
-The computational execution yielded an optimal solution that minimized costs while strictly adhering to all system bounds.
+The computational execution yielded an optimal integer solution that successfully minimized costs while strictly adhering to all system bounds.
 
-### Business & Efficiency Metrics 
+### 4.1 Business & Efficiency Metrics 
 
-* **Total Annual Cost:** $950,552.75 (Leaving a remaining budget of $549,447.25).
-* **Network Efficiency:** The system delivers 98,550 units annually at an average cost of $9.65 per unit.
+* **Total Annual Cost:** \$950,552.75
+* **Remaining Budget:** \$549,447.25
+* **Network Efficiency:** The optimized system delivers 98,550 units annually at an average cost of \$9.65 per unit.
 
-### Optimal Routing & Utilization 
+### 4.2 Optimal Routing & Capacity Utilization 
 
-The algorithm selected the North Campus Warehouse and the South Campus Warehouse.
+The algorithm evaluated the physical distances and capacities, ultimately selecting the North Campus Warehouse and the South Campus Warehouse.
 
 * **WH_NORTH (50.0% Utilization):** Services the Medical Center (29,200 units), Engineering Building (10,950 units), Science Hall (12,775 units), and North Dormitory (20,075 units).
 * **WH_SOUTH (20.0% Utilization):** Services the South Dormitory (16,425 units) and Main Library (9,125 units).
 
-### Verification of Constraints 
+### 4.3 Constraint Verification 
 
-The output is mathematically valid against all limits. Exactly two warehouses were activated. Total shipments precisely match the 98,550 annual unit demand. The capacities of WH_NORTH and WH_SOUTH were respected (operating at 50% and 20% utilization, respectively), and the final cost is safely below the $1.5M cap.
+Analysis of the output confirms mathematical validity against all limits. Exactly two warehouses were activated. Total shipments precisely match the 98,550 annual unit demand. The capacities of WH_NORTH and WH_SOUTH were respected (operating efficiently at 50% and 20% utilization, respectively), and the final operational cost is safely below the \$1.5M ceiling.
 
-### Actionable Recommendation 
+## 5. Conclusion & Actionable Recommendations
 
-Campus City Logistics should deploy the WH_NORTH and WH_SOUTH distribution plan. It secures a redundant supply chain while operating roughly 33% under budget. Furthermore, because the active warehouses are only utilizing 50% and 20% of their respective capacities, the campus possesses massive logistical overhead for future facility expansion without requiring the construction of the East Gate warehouse.
+Campus City Logistics should immediately deploy the dual-warehouse distribution plan governed by WH_NORTH and WH_SOUTH. This configuration secures a redundant supply chain while operating roughly 36.6% under budget. Because the active warehouses are operating well below their maximum capacities, the campus possesses significant logistical overhead. This allows for future facility expansion and increased resource demand without requiring the capital expenditure of constructing the East Gate warehouse.
+
+---
+
+### Appendix: Visualizations
 
 ![Geographic Visualization of Optimized Supply Routes over Campus](campus_map.png){#fig-map fig-align="center" width="90%"}
 
-![Output, as obtained in the Terminal after Optimization](output.png){#fig-map fig-align="center" width="90%"}
+![Terminal Output of the MILP Optimization Engine](output.png){#fig-output fig-align="center" width="90%"}
