@@ -1,7 +1,7 @@
-Facility_ID,Facility_Name,Type,Daily_Demand
-MED_CENTER,Campus Medical Center,Hospital,80
-ENG_BUILDING,Engineering Building,Academic,30
-SCIENCE_HALL,Science Hall,Academic,35
-DORM_A,North Dormitory,Residential,55
-DORM_B,South Dormitory,Residential,45
-LIBRARY,Main Library,Academic,25
+Facility_ID,Facility_Name,Type,Daily_Demand,Latitude,Longitude
+MED_CENTER,Campus Medical Center,Hospital,80,40.8075,-73.9626
+ENG_BUILDING,Engineering Building,Academic,30,40.81,-73.96
+SCIENCE_HALL,Science Hall,Academic,35,40.805,-73.965
+DORM_A,North Dormitory,Residential,55,40.812,-73.959
+DORM_B,South Dormitory,Residential,45,40.803,-73.966
+LIBRARY,Main Library,Academic,25,40.8085,-73.963
