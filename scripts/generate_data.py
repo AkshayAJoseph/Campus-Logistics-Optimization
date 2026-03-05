@@ -16,23 +16,23 @@ def haversine(lat1, lon1, lat2, lon2):
 def create_custom_data():
     os.makedirs("data", exist_ok=True)
 
-    # 1. Custom Facilities Data (Mapped near Saintgits College, Kerala)
+    # 1. Custom Facilities Data (Shifted East and slightly North-East)
     facilities = [
         ["Facility_ID", "Facility_Name", "Type", "Daily_Demand", "Latitude", "Longitude"],
-        ["MED_CENTER", "Campus Medical Center", "Hospital", 80, 9.5485, 76.5412],
-        ["ENG_BUILDING", "Engineering Building", "Academic", 30, 9.5490, 76.5415],
-        ["SCIENCE_HALL", "Science Hall", "Academic", 35, 9.5475, 76.5420],
-        ["DORM_A", "North Dormitory", "Residential", 55, 9.5500, 76.5405],
-        ["DORM_B", "South Dormitory", "Residential", 45, 9.5460, 76.5430],
-        ["LIBRARY", "Main Library", "Academic", 25, 9.5480, 76.5410]
+        ["MED_CENTER", "Campus Medical Center", "Hospital", 80, 9.5115, 76.5535],
+        ["ENG_BUILDING", "Engineering Building", "Academic", 30, 9.5110, 76.5540],
+        ["SCIENCE_HALL", "Science Hall", "Academic", 35, 9.5105, 76.5545],
+        ["DORM_A", "North Dormitory", "Residential", 55, 9.5125, 76.5530],
+        ["DORM_B", "South Dormitory", "Residential", 45, 9.5100, 76.5535],
+        ["LIBRARY", "Main Library", "Academic", 25, 9.5112, 76.5538]
     ]
 
-    # 2. Custom Warehouses Data
+    # 2. Custom Warehouses Data (Shifted to match the new campus center)
     warehouses = [
         ["Warehouse_ID", "Warehouse_Name", "Daily_Capacity", "Construction_Cost", "Operational_Cost/Day", "Latitude", "Longitude"],
-        ["WH_NORTH", "North Campus Warehouse", 400, 300000, 800, 9.5510, 76.5400],
-        ["WH_SOUTH", "South Campus Warehouse", 350, 280000, 700, 9.5450, 76.5440],
-        ["WH_EAST", "East Gate Warehouse", 450, 320000, 900, 9.5485, 76.5450]
+        ["WH_NORTH", "North Campus Warehouse", 400, 300000, 800, 9.5130, 76.5540],
+        ["WH_SOUTH", "South Campus Warehouse", 350, 280000, 700, 9.5090, 76.5540],
+        ["WH_EAST", "East Gate Warehouse", 450, 320000, 900, 9.5115, 76.5560]
     ]
 
     # 3. Dynamically Calculate Transportation Costs using Haversine

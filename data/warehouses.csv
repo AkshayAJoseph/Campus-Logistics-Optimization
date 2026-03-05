@@ -1,4 +1,4 @@
 Warehouse_ID,Warehouse_Name,Daily_Capacity,Construction_Cost,Operational_Cost/Day,Latitude,Longitude
-WH_NORTH,North Campus Warehouse,400,300000,800,9.551,76.54
-WH_SOUTH,South Campus Warehouse,350,280000,700,9.545,76.544
-WH_EAST,East Gate Warehouse,450,320000,900,9.5485,76.545
+WH_NORTH,North Campus Warehouse,400,300000,800,9.513,76.554
+WH_SOUTH,South Campus Warehouse,350,280000,700,9.509,76.554
+WH_EAST,East Gate Warehouse,450,320000,900,9.5115,76.556

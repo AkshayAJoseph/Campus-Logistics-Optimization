@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Akshay Joseph">
+
+<title>Micro-Project Review: Computational Implementation of Real-Time Optimization Problems</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="Report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Report_files/libs/quarto-html/quarto.js"></script>
+<script src="Report_files/libs/quarto-html/popper.min.js"></script>
+<script src="Report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Report_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#problem-statement" id="toc-problem-statement" class="nav-link active" data-scroll-target="#problem-statement">1. Problem Statement</a></li>
+  <li><a href="#mathematical-formulation" id="toc-mathematical-formulation" class="nav-link" data-scroll-target="#mathematical-formulation">2. Mathematical Formulation</a>
+  <ul class="collapse">
+  <li><a href="#sets-and-parameters" id="toc-sets-and-parameters" class="nav-link" data-scroll-target="#sets-and-parameters">Sets and Parameters</a></li>
+  <li><a href="#decision-variables" id="toc-decision-variables" class="nav-link" data-scroll-target="#decision-variables">Decision Variables</a></li>
+  <li><a href="#objective-function" id="toc-objective-function" class="nav-link" data-scroll-target="#objective-function">Objective Function</a></li>
+  <li><a href="#constraints" id="toc-constraints" class="nav-link" data-scroll-target="#constraints">Constraints</a></li>
+  </ul></li>
+  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">3. Methodology</a></li>
+  <li><a href="#results-analysis" id="toc-results-analysis" class="nav-link" data-scroll-target="#results-analysis">4. Results &amp; Analysis</a>
+  <ul class="collapse">
+  <li><a href="#business-efficiency-metrics" id="toc-business-efficiency-metrics" class="nav-link" data-scroll-target="#business-efficiency-metrics">Business &amp; Efficiency Metrics</a></li>
+  <li><a href="#optimal-routing-utilization" id="toc-optimal-routing-utilization" class="nav-link" data-scroll-target="#optimal-routing-utilization">Optimal Routing &amp; Utilization</a></li>
+  <li><a href="#verification-of-constraints" id="toc-verification-of-constraints" class="nav-link" data-scroll-target="#verification-of-constraints">Verification of Constraints</a></li>
+  <li><a href="#actionable-recommendation" id="toc-actionable-recommendation" class="nav-link" data-scroll-target="#actionable-recommendation">Actionable Recommendation</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Report.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Micro-Project Review: Computational Implementation of Real-Time Optimization Problems</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Akshay Joseph </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Course:</strong> 24MAT382 - Computational Optimization and Applications<br>
+<strong>Institution:</strong> Department of Mathematics, Saintgits College of Engineering (Autonomous)</p>
+<hr>
+<section id="problem-statement" class="level2">
+<h2 class="anchored" data-anchor-id="problem-statement">1. Problem Statement</h2>
+<p>Campus City Logistics currently relies on an inefficient, ad-hoc system to distribute essential resources across campus facilities. The objective of this project is to design an optimal supply distribution network by selecting warehouse locations and creating a routing plan that minimizes total annual costs.</p>
+<p>The system must reliably supply 270 units daily across six critical campus facilities (Medical Center, Engineering Building, Science Hall, North Dormitory, South Dormitory, and Main Library). To ensure redundancy, exactly two of the three available warehouses (North, South, East) must be selected. The solution must respect the maximum capacity of the chosen warehouses and ensure that the total annualized cost—including amortized construction, daily operations, and transportation—does not exceed a strict budget of $1,500,000.</p>
+</section>
+<section id="mathematical-formulation" class="level2">
+<h2 class="anchored" data-anchor-id="mathematical-formulation">2. Mathematical Formulation</h2>
+<p>The scenario is modeled as a Mixed-Integer Linear Programming (MILP) problem.</p>
+<section id="sets-and-parameters" class="level3">
+<h3 class="anchored" data-anchor-id="sets-and-parameters">Sets and Parameters</h3>
+<ul>
+<li><span class="math inline">\(I\)</span>: Set of candidate warehouses <span class="math inline">\(\{1, 2, 3\}\)</span> representing North, South, and East.</li>
+<li><span class="math inline">\(J\)</span>: Set of campus facilities <span class="math inline">\(\{1, 2, 3, 4, 5, 6\}\)</span>.</li>
+<li><span class="math inline">\(D_j\)</span>: Daily demand of facility <span class="math inline">\(j\)</span> in units.</li>
+<li><span class="math inline">\(C_i\)</span>: Daily capacity of warehouse <span class="math inline">\(i\)</span> in units.</li>
+<li><span class="math inline">\(F_i\)</span>: Total construction cost of warehouse <span class="math inline">\(i\)</span>.</li>
+<li><span class="math inline">\(O_i\)</span>: Daily operational cost of warehouse <span class="math inline">\(i\)</span>.</li>
+<li><span class="math inline">\(T_{ij}\)</span>: Transportation cost per unit from warehouse <span class="math inline">\(i\)</span> to facility <span class="math inline">\(j\)</span>.</li>
+</ul>
+</section>
+<section id="decision-variables" class="level3">
+<h3 class="anchored" data-anchor-id="decision-variables">Decision Variables</h3>
+<ul>
+<li><span class="math inline">\(y_i \in \{0, 1\}\)</span>: A binary variable equaling <span class="math inline">\(1\)</span> if warehouse <span class="math inline">\(i\)</span> is selected, and <span class="math inline">\(0\)</span> otherwise.</li>
+<li><span class="math inline">\(X_{ij} \ge 0\)</span>: A continuous, non-negative variable representing the total annual units shipped from warehouse <span class="math inline">\(i\)</span> to facility <span class="math inline">\(j\)</span>.</li>
+</ul>
+</section>
+<section id="objective-function" class="level3">
+<h3 class="anchored" data-anchor-id="objective-function">Objective Function</h3>
+<p>Minimize total annual network cost (<span class="math inline">\(Z\)</span>): <span class="math display">\[
+\text{Minimize } Z = \sum_{i \in I} \left( \frac{F_i}{10} + 365 \cdot O_i \right) y_i + \sum_{i \in I} \sum_{j \in J} T_{ij} X_{ij}
+\]</span></p>
+</section>
+<section id="constraints" class="level3">
+<h3 class="anchored" data-anchor-id="constraints">Constraints</h3>
+<p><strong>Redundancy Constraint:</strong> Exactly two warehouses must be selected. <span class="math display">\[
+\sum_{i \in I} y_i = 2
+\]</span></p>
+<p><strong>Demand Constraint:</strong> Each facility must receive exactly its annual demand. <span class="math display">\[
+\sum_{i \in I} X_{ij} = 365 \cdot D_j \quad \forall j \in J
+\]</span></p>
+<p><strong>Capacity Constraint:</strong> Shipments from a warehouse cannot exceed its annual capacity. <span class="math display">\[
+\sum_{j \in J} X_{ij} \le 365 \cdot C_i \cdot y_i \quad \forall i \in I
+\]</span></p>
+<p><strong>Budget Constraint:</strong> Total annual cost cannot exceed <span class="math inline">\(1,500,000.\)</span>$ <em>{i I} ( + 365 O_i ) y_i + </em>{i I} <em>{j J} T</em>{ij} X_{ij} $$</p>
+</section>
+</section>
+<section id="methodology" class="level2">
+<h2 class="anchored" data-anchor-id="methodology">3. Methodology</h2>
+<p>This project implements the mathematical model computationally using Python, specifically relying on <code>pulp</code> and <code>pandas</code>. A Mixed-Integer Linear Programming (MILP) solver was chosen because the problem combines discrete binary logic (opening/closing a warehouse) with continuous flows (supply volumes). Unlike greedy algorithms, a MILP solver mathematically guarantees finding the global minimum cost while strictly enforcing capacity and budget constraints.</p>
+<p>Furthermore, the <code>folium</code> library was utilized to translate the mathematical output into a dynamic, interactive geographic visualization, proving the spatial logic of the optimized routing map.</p>
+</section>
+<section id="results-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="results-analysis">4. Results &amp; Analysis</h2>
+<p>The computational execution yielded an optimal solution that minimized costs while strictly adhering to all system bounds.</p>
+<section id="business-efficiency-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="business-efficiency-metrics">Business &amp; Efficiency Metrics</h3>
+<ul>
+<li><strong>Total Annual Cost:</strong> $1,004,481.50 (Leaving a remaining budget of $495,518.50).</li>
+<li><strong>Network Efficiency:</strong> The system delivers 98,550 units annually at an average cost of $10.19 per unit.</li>
+</ul>
+</section>
+<section id="optimal-routing-utilization" class="level3">
+<h3 class="anchored" data-anchor-id="optimal-routing-utilization">Optimal Routing &amp; Utilization</h3>
+<p>The algorithm selected the North Campus Warehouse and the South Campus Warehouse.</p>
+<ul>
+<li><strong>WH_NORTH (50.0% Utilization):</strong> Services the Medical Center (29,200 units), Engineering Building (10,950 units), Science Hall (12,775 units), and North Dormitory (20,075 units).</li>
+<li><strong>WH_SOUTH (20.0% Utilization):</strong> Services the South Dormitory (16,425 units) and Main Library (9,125 units).</li>
+</ul>
+</section>
+<section id="verification-of-constraints" class="level3">
+<h3 class="anchored" data-anchor-id="verification-of-constraints">Verification of Constraints</h3>
+<p>The output is mathematically valid against all limits. Exactly two warehouses were activated. Total shipments precisely match the 98,550 annual unit demand. The capacities of WH_NORTH and WH_SOUTH were respected (operating at 50% and 20% utilization, respectively), and the final cost is safely below the $1.5M cap.</p>
+</section>
+<section id="actionable-recommendation" class="level3">
+<h3 class="anchored" data-anchor-id="actionable-recommendation">Actionable Recommendation</h3>
+<p>Campus City Logistics should deploy the WH_NORTH and WH_SOUTH distribution plan. It secures a redundant supply chain while operating roughly 33% under budget. Furthermore, because the active warehouses are only utilizing 50% and 20% of their respective capacities, the campus possesses massive logistical overhead for future facility expansion without requiring the construction of the East Gate warehouse.</p>
+<blockquote class="blockquote">
+<p><em>Note: Please refer to <code>optimized_campus_map.html</code> generated by the source code for the interactive geographic visualization of this distribution network.</em></p>
+</blockquote>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
