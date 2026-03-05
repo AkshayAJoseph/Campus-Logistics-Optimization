@@ -1,4 +1,0 @@
-Warehouse_ID,Warehouse_Name,Daily_Capacity,Construction_Cost,Operational_Cost/Day
-WH_NORTH,North Campus Warehouse,400,300000,800
-WH_SOUTH,South Campus Warehouse,350,280000,700
-WH_EAST,East Gate Warehouse,450,320000,900

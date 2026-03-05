@@ -1,7 +1,0 @@
-Facility_ID,Facility_Name,Type,Daily_Demand
-MED_CENTER,Campus Medical Center,Hospital,80
-ENG_BUILDING,Engineering Building,Academic,30
-SCIENCE_HALL,Science Hall,Academic,35
-DORM_A,North Dormitory,Residential,55
-DORM_B,South Dormitory,Residential,45
-LIBRARY,Main Library,Academic,25

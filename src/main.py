@@ -1,3 +1,7 @@
+# ==============================================================================
+# CAMPUS LOGISTICS OPTIMIZATION & INTERACTIVE MAPPING
+# ==============================================================================
+
 import pulp
 import pandas as pd
 import folium
@@ -5,9 +9,9 @@ import folium
 def run_optimization():
     print("🚀 Initializing Optimization Engine...\n")
 
-
+    # ==========================================
     # 1. DATA INGESTION & PROCESSING
-
+    # ==========================================
     try:
         facilities = pd.read_csv('../data/facilities.csv')
         warehouses = pd.read_csv('../data/warehouses.csv')
@@ -33,8 +37,9 @@ def run_optimization():
     facility_coords = {row['Facility_ID']: [row['Latitude'], row['Longitude']] for _, row in facilities.iterrows()}
     warehouse_coords = {row['Warehouse_ID']: [row['Latitude'], row['Longitude']] for _, row in warehouses.iterrows()}
 
+    # ==========================================
     # 2. MILP OPTIMIZATION MODEL
-
+    # ==========================================
     model = pulp.LpProblem("Campus_Emergency_Supply_Distribution", pulp.LpMinimize)
 
     # Decision Variables
@@ -60,7 +65,9 @@ def run_optimization():
     # Solve
     model.solve()
 
+    # ==========================================
     # 3. BUSINESS ANALYTICS & TERMINAL OUTPUT
+    # ==========================================
     if pulp.LpStatus[model.status] != 'Optimal':
         print("❌ A feasible optimal solution could not be found within the constraints.")
         return
@@ -116,7 +123,7 @@ def run_optimization():
             color="blue",
             fill=True, fill_opacity=0.8,
             tooltip=f"Facility: {f} (Demand: {demand_dict[f]}/day)"
-        ).addTo(campus_map)
+        ).add_to(campus_map)
 
     # Find maximum flow for dynamic line weighting
     max_flow = max(X[(w, f)].varValue for w in W_IDs for f in F_IDs if X[(w, f)].varValue > 0)
@@ -131,7 +138,7 @@ def run_optimization():
                 location=[lat, lon],
                 tooltip=f"{w} (SELECTED)",
                 icon=folium.Icon(color="green", icon="check-circle", prefix="fa")
-            ).addTo(campus_map)
+            ).add_to(campus_map)
             
             # Draw Dynamic Routes
             for f in F_IDs:
@@ -146,13 +153,13 @@ def run_optimization():
                         weight=dynamic_weight,
                         opacity=0.7,
                         tooltip=f"{w} ➔ {f}: {shipped:,.0f} units/year"
-                    ).addTo(campus_map)
+                    ).add_to(campus_map)
         else:
             folium.Marker(
                 location=[lat, lon],
                 tooltip=f"{w} (Available)",
                 icon=folium.Icon(color="red", icon="times-circle", prefix="fa")
-            ).addTo(campus_map)
+            ).add_to(campus_map)
 
     map_filename = "optimized_campus_map.html"
     campus_map.save(map_filename)
