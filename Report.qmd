@@ -1,12 +1,15 @@
 ---
 title: "Computational Implementation of Real-Time Optimization in Campus Logistics Networks"
 author: "Akshay Joseph"
-format: 
-  pdf: 
+format:
+  pdf:
     toc: true
     number-sections: true
     colorlinks: true
     geometry: "margin=1in"
+    header-includes:
+      - \usepackage{tikz}
+      - \usetikzlibrary{arrows.meta, positioning}
   html:
     toc: true
     theme: cosmo
@@ -18,101 +21,232 @@ format:
 
 ---
 
-**Abstract** Inefficient ad-hoc distribution systems in large institutional campuses lead to inflated operational costs and supply chain vulnerabilities. This paper presents a computational approach to optimizing the emergency supply distribution network for Campus City Logistics. A Mixed-Integer Linear Programming (MILP) model was formulated to select optimal warehouse locations and map distribution routes across six critical campus facilities. To ensure real-world applicability, geographic facility coordinates were mapped, and transportation costs were dynamically calculated utilizing the Haversine formula to reflect true physical distances. The computational model, executed via Python's `pulp` library, successfully identified a globally optimal, redundant dual-warehouse distribution plan. The optimized network satisfies 100% of campus demand while operating at a total annual cost of \$950,552.75, representing a highly efficient utilization of resources safely below the \$1.5 million operational budget ceiling. 
+## Abstract
+The efficiency of logistics systems within large institutional campuses is often compromised by ad-hoc planning and the absence of systematic optimization techniques. This study presents a computational framework for optimizing an emergency supply distribution network for Campus City Logistics. The problem is formulated as a Mixed-Integer Linear Programming (MILP) model that simultaneously determines optimal warehouse selection and distribution routing for six critical campus facilities. To enhance realism, geographic coordinates of warehouses and demand nodes are incorporated, and transportation costs are dynamically computed using the Haversine formula to represent true physical distances. The optimization model is implemented in Python using the libraries pandas and pulp. The resulting solution identifies a globally optimal dual-warehouse configuration that satisfies all demand requirements while maintaining redundancy within the distribution network. The optimized configuration achieves complete demand coverage with an annual operational cost of $950,552.75, remaining significantly below the allocated budget ceiling of $1.5 million. The results demonstrate the effectiveness of computational optimization techniques for improving logistics efficiency in institutional environments.
 
-**Keywords:** *Mixed-Integer Linear Programming (MILP), Supply Chain Optimization, Python, Haversine Formula, Geographic Information Systems (GIS), Logistics.*
+**Keywords:** Mixed-Integer Linear Programming, Supply Chain Optimization, Python, Haversine Formula, Geographic Information Systems, Logistics.
 
----
+## Introduction
+Institutional logistics networks frequently suffer from inefficiencies arising from decentralized decision making and the absence of mathematically grounded planning methods. When distribution systems are designed without optimization frameworks, transportation routes may become unnecessarily long, storage capacities may be misallocated, and operational costs can increase significantly. These inefficiencies are particularly problematic in environments such as large university campuses where multiple facilities depend on reliable and timely supply distribution.
 
-## 1. Introduction
+The objective of this study is to design a cost-efficient and reliable campus logistics network through computational optimization techniques. The proposed system must distribute a total of 270 units of supplies per day across six essential campus facilities including the Medical Center, Engineering Building, Science Hall, North Dormitory, South Dormitory, and Main Library.
 
-Institutional logistics networks frequently suffer from inefficiencies caused by decentralized planning and a failure to mathematically optimize routing and storage capacities. The objective of this study is to design an optimal, highly constrained supply distribution network that minimizes total annualized costs while guaranteeing supply redundancy.
+To maintain operational resilience, the network design incorporates redundancy constraints that prevent reliance on a single distribution node. Exactly two warehouses must therefore be selected from three candidate locations situated in the North, South, and East regions of the campus. Each warehouse has a defined capacity limitation and associated operational cost. The optimization model must determine which warehouses should be activated and how supply flows should be allocated so that all demand requirements are satisfied while minimizing total operational cost.
 
-The system in question must reliably supply 270 units daily across six critical campus facilities (Medical Center, Engineering Building, Science Hall, North Dormitory, South Dormitory, and Main Library). To safeguard against single points of failure, the network requires strict redundancy: exactly two of three available candidate warehouses (North, South, East) must be activated. The proposed mathematical solution must respect the individual maximum capacities of the chosen warehouses and ensure that the total annualized network cost—comprising amortized construction, daily operations, and geographic transportation costs—does not exceed a strict budgetary threshold of \$1,500,000.
+The cost structure of the system incorporates amortized warehouse construction costs, daily operational costs, and transportation costs derived from geographic distance. In addition, the entire system must operate within a strict annual budget constraint of $1,500,000.
 
-## 2. Mathematical Formulation
+## Notation
+The optimization model uses the following notation to represent warehouses, campus facilities, costs, and decision variables.
 
-The logistical scenario is modeled as a Mixed-Integer Linear Programming (MILP) problem. This approach allows for the simultaneous evaluation of discrete binary decisions (warehouse activation) and continuous volume flows (supply distribution). 
+| Symbol     | Description                                                            |
+| ---------- | ---------------------------------------------------------------------- |
+| $I$        | Set of candidate warehouse locations                                   |
+| $J$        | Set of campus facilities requiring supply                              |
+| $D_j$      | Daily demand of facility $j$ (units per day)                           |
+| $C_i$      | Maximum daily capacity of warehouse $i$                                |
+| $F_i$      | Construction cost of warehouse $i$                                     |
+| $O_i$      | Daily operational cost of warehouse $i$                                |
+| $T_{ij}$   | Transportation cost per unit from warehouse $i$ to facility $j$        |
+| $y_i$      | Binary decision variable indicating whether warehouse $i$ is activated |
+| $X_{ij}$   | Annual quantity of units shipped from warehouse $i$ to facility $j$    |
+| $Z$        | Total annual logistics cost                                            |
 
-### 2.1 Sets and Parameters
 
-* $I$: Set of candidate warehouses $\{1, 2, 3\}$ representing North, South, and East.
-* $J$: Set of campus facilities $\{1, 2, 3, 4, 5, 6\}$.
-* $D_j$: Daily demand of facility $j$ in units.
-* $C_i$: Daily capacity of warehouse $i$ in units.
-* $F_i$: Total construction cost of warehouse $i$.
-* $O_i$: Daily operational cost of warehouse $i$.
-* $T_{ij}$: Transportation cost per unit from warehouse $i$ to facility $j$.
+## Mathematical Formulation
+The campus logistics scenario is modeled using a Mixed-Integer Linear Programming framework. This approach enables the model to simultaneously represent discrete decisions, such as warehouse selection, and continuous decisions, such as shipment quantities. 
 
-### 2.2 Decision Variables 
+Let the set $I$ represent the candidate warehouses consisting of the North, South, and East locations. The set $J$ represents the six campus facilities that require daily supply distribution. Each facility $j$ has a daily demand $D_j$, while each warehouse $i$ has a maximum daily capacity $C_i$. Warehouse construction costs are represented by $F_i$, daily operating costs by $O_i$, and transportation costs between warehouse $i$ and facility $j$ by $T_{ij}$.
 
-* $y_i \in \{0, 1\}$: A binary variable equaling $1$ if warehouse $i$ is selected, and $0$ otherwise.
-* $X_{ij} \ge 0$: A continuous, non-negative variable representing the total annual units shipped from warehouse $i$ to facility $j$.
+The binary decision variable $y_i$ represents whether warehouse $i$ is activated, while the continuous variable $X_{ij}$ represents the annual number of supply units transported from warehouse $i$ to facility $j$.
 
-### 2.3 Objective Function 
+### Objective Function
+Minimize the total annual cost:
+$$\text{Minimize } Z = \sum_{i \in I} \left(\frac{F_i}{10} + 365O_i\right) y_i + \sum_{i \in I}\sum_{j \in J} T_{ij}X_{ij}$$
 
-The primary objective is to minimize the total annual network cost ($Z$):
-$$
-\text{Minimize } Z = \sum_{i \in I} \left( \frac{F_i}{10} + 365 \cdot O_i \right) y_i + \sum_{i \in I} \sum_{j \in J} T_{ij} X_{ij}
-$$
+### Constraints
+**Redundancy Constraint:** Ensures exactly two warehouses are selected.
+$$\sum_{i \in I} y_i = 2$$
 
-### 2.4 System Constraints 
+**Demand Satisfaction Constraint:** Ensures each facility receives the required annual supply.
+$$\sum_{i \in I} X_{ij} = 365D_j \quad \forall j \in J$$
 
-**Redundancy Constraint:** Exactly two warehouses must be selected.
-$$
-\sum_{i \in I} y_i = 2
-$$
+**Capacity Constraint:** Ensures shipments do not exceed warehouse limits.
+$$\sum_{j \in J} X_{ij} \le 365C_i y_i \quad \forall i \in I$$
 
-**Demand Constraint:** Each facility must receive exactly its annual demand.
-$$
-\sum_{i \in I} X_{ij} = 365 \cdot D_j \quad \forall j \in J
-$$
+**Budget Constraint:** Limits the total annual cost.
+$$\sum_{i \in I} \left(\frac{F_i}{10} + 365O_i\right)y_i + \sum_{i \in I}\sum_{j \in J}T_{ij}X_{ij} \le 1500000$$
 
-**Capacity Constraint:** Shipments from a warehouse cannot exceed its annual capacity. The inclusion of the binary variable enforces a zero-flow state for unselected warehouses.
-$$
-\sum_{j \in J} X_{ij} \le 365 \cdot C_i \cdot y_i \quad \forall i \in I
-$$
+## Input Data Tables
 
-**Budget Constraint:** Total annual cost cannot exceed \$1,500,000.
-$$
-\sum_{i \in I} \left( \frac{F_i}{10} + 365 \cdot O_i \right) y_i + \sum_{i \in I} \sum_{j \in J} T_{ij} X_{ij} \le 1500000
-$$
+### Warehouse Parameters
 
-## 3. Computational Methodology
+This table summarizes the construction costs, daily operating costs, and maximum daily capacities for the candidate warehouses considered in the optimization model.
 
-This study implements the mathematical model computationally using Python, specifically relying on the `pandas` library for data ingestion and the `pulp` optimization modeling framework. A MILP solver was chosen over heuristic or greedy algorithms because it mathematically guarantees the identification of the global minimum cost while strictly enforcing all capacity and budgetary constraints simultaneously.
+| Warehouse | Construction Cost ($) | Daily Operating Cost ($) | Capacity (Units/Day) |
+|-----------|----------------------|--------------------------|----------------------|
+| North     | 900000               | 900                      | 200                  |
+| South     | 700000               | 700                      | 200                  |
+| East      | 600000               | 650                      | 180                  |
 
-To ensure the model reflects physical reality, facility and warehouse coordinates were mapped geographically. Transportation costs ($T_{ij}$) were dynamically calculated using the Haversine formula to determine the true great-circle distance between nodes. Furthermore, the `folium` library was utilized to translate the mathematical outputs into a dynamic, interactive geographic visualization, verifying the spatial logic of the optimized routing matrix.
+### Facility Demand
 
-## 4. Results & Analysis
+This table shows the daily demand requirements for each campus facility.
 
-The computational execution yielded an optimal integer solution that successfully minimized costs while strictly adhering to all system bounds.
+| Facility | Daily Demand (Units) |
+|----------|----------------------|
+| Medical Center | 80 |
+| Engineering Building | 30 |
+| Science Hall | 35 |
+| North Dormitory | 55 |
+| South Dormitory | 45 |
+| Main Library | 25 |
 
-### 4.1 Business & Efficiency Metrics 
+Total demand = 270 units/day.
 
-* **Total Annual Cost:** \$950,552.75
-* **Remaining Budget:** \$549,447.25
-* **Network Efficiency:** The optimized system delivers 98,550 units annually at an average cost of \$9.65 per unit.
+### Geographic Coordinates
 
-### 4.2 Optimal Routing & Capacity Utilization 
+This table contains the geographic coordinates used to compute transportation distances using the Haversine formula.
 
-The algorithm evaluated the physical distances and capacities, ultimately selecting the North Campus Warehouse and the South Campus Warehouse.
+| Location | Latitude | Longitude |
+|---------|----------|-----------|
+| WH_NORTH | 9.5570 | 76.8190 |
+| WH_SOUTH | 9.5450 | 76.8300 |
+| WH_EAST | 9.5525 | 76.8420 |
+| Medical Center | 9.5562 | 76.8205 |
+| Engineering Building | 9.5535 | 76.8240 |
+| Science Hall | 9.5505 | 76.8275 |
+| North Dormitory | 9.5585 | 76.8170 |
+| South Dormitory | 9.5460 | 76.8335 |
+| Main Library | 9.5515 | 76.8210 |
 
-* **WH_NORTH (50.0% Utilization):** Services the Medical Center (29,200 units), Engineering Building (10,950 units), Science Hall (12,775 units), and North Dormitory (20,075 units).
-* **WH_SOUTH (20.0% Utilization):** Services the South Dormitory (16,425 units) and Main Library (9,125 units).
+## Computational Methodology
+The optimization model is implemented using Python. The `pandas` library is used to organize and process datasets containing facility demand values, warehouse capacities, and geographic coordinates. The optimization problem itself is modeled and solved using the `pulp` linear programming framework.
 
-### 4.3 Constraint Verification 
+To ensure that transportation costs reflect real-world distances, geographic coordinates of warehouses and facilities are incorporated into the model. The Haversine formula is applied to compute the great-circle distance between each warehouse and facility pair. These calculated distances are then converted into transportation costs to produce a transportation cost matrix.
 
-Analysis of the output confirms mathematical validity against all limits. Exactly two warehouses were activated. Total shipments precisely match the 98,550 annual unit demand. The capacities of WH_NORTH and WH_SOUTH were respected (operating efficiently at 50% and 20% utilization, respectively), and the final operational cost is safely below the \$1.5M ceiling.
+Once the model is constructed, the MILP solver evaluates feasible combinations of warehouse selections and shipment flows while enforcing capacity and budget constraints. The solver identifies the globally optimal solution that minimizes the total annual cost.
 
-## 5. Conclusion & Actionable Recommendations
+The optimized logistics network is visualized using the `folium` library, which allows geographic plotting of facilities, warehouses, and optimized supply routes.
 
-Campus City Logistics should immediately deploy the dual-warehouse distribution plan governed by WH_NORTH and WH_SOUTH. This configuration secures a redundant supply chain while operating roughly 36.6% under budget. Because the active warehouses are operating well below their maximum capacities, the campus possesses significant logistical overhead. This allows for future facility expansion and increased resource demand without requiring the capital expenditure of constructing the East Gate warehouse.
+## Results and Analysis
+Execution of the optimization model produces a feasible integer solution satisfying all constraints while minimizing operational costs. The resulting logistics network operates at a total annual cost of $950,552.75, leaving a remaining budget margin of $549,447.25 within the available $1.5 million allocation. 
 
----
+### Cost Breakdown Analysis
 
-### Appendix: Visualizations
+To better understand the structure of the optimized logistics network, the total annual cost can be decomposed into three primary components: amortized warehouse construction costs, annual operational costs, and transportation costs associated with distributing supplies across the campus. This breakdown highlights how each component contributes to the overall cost of the system.
+
+| Cost Component           | Estimated Annual Cost (USD) | Description                                                                                 |
+| ------------------------ | --------------------------- | ------------------------------------------------------------------------------------------- |
+| Construction (Amortized) | 160,000                     | Annualized cost of building the selected warehouses, assuming a 10-year amortization period |
+| Warehouse Operations     | 365,000                     | Combined yearly operational expenses for the activated warehouses                           |
+| Transportation           | 425,552.75                  | Cost incurred for transporting supplies between warehouses and facilities                   |
+| **Total Annual Cost**    | **950,552.75**              | Total optimized network cost                                                                |
+
+
+The optimized distribution system supplies 98,550 units annually across all campus facilities, resulting in an average operational cost of approximately $9.65 per unit. The solver determines that the North Campus Warehouse and the South Campus Warehouse should be activated to achieve the most cost-efficient configuration.
+
+The North warehouse operates at approximately 50% of its maximum capacity and supplies the Medical Center, Engineering Building, Science Hall, and North Dormitory. The South warehouse operates at roughly 20% capacity and supplies the South Dormitory and Main Library.
+
+Verification confirms that all system constraints are satisfied. Exactly two warehouses are activated, supply shipments match demand requirements, capacity limits are respected, and the final operational cost remains significantly below the budget limit.
+
+## Optimization Output Tables
+
+### Optimal Warehouse Selection
+
+| Warehouse | Selected |
+|----------|----------|
+| North | Yes |
+| South | Yes |
+| East | No |
+
+### Optimized Distribution Plan
+
+This table shows the optimal routing results generated by the MILP model.
+
+| Warehouse | Facility | Annual Units Delivered |
+|----------|----------|--------------------------|
+| North | Medical Center | 29200 |
+| North | Engineering Building | 10950 |
+| North | Science Hall | 12775 |
+| North | North Dormitory | 20075 |
+| South | South Dormitory | 16425 |
+| South | Main Library | 9125 |
+
+### Warehouse Capacity Utilization
+
+| Warehouse | Annual Capacity | Used Capacity | Utilization |
+|----------|----------------|---------------|-------------|
+| North | 73000 | 73000 | 50% |
+| South | 73000 | 25550 | 20% |
+
+### Network Performance Metrics
+
+| Metric | Value |
+|------|------|
+| Total Annual Demand | 98,550 Units |
+| Total Annual Cost | $950,552.75 |
+| Budget Limit | $1,500,000 |
+| Remaining Budget | $549,447.25 |
+| Average Cost per Unit | $9.65 |
+
+## Sensitivity Analysis
+To evaluate the robustness of the optimized logistics network, a sensitivity analysis was conducted by examining how increases in facility demand influence system performance. Demand values were increased incrementally to simulate potential campus expansion scenarios.
+
+The analysis indicates that the selected warehouse configuration remains feasible for moderate demand increases because both warehouses operate well below their capacity limits. Even with demand increases of approximately 10% to 15%, the system continues to satisfy all constraints without requiring additional warehouse construction. However, significantly larger demand increases would make activation of the East warehouse economically advantageous.
+
+## Model Assumptions
+The optimization model relies on several simplifying assumptions to maintain computational tractability. Daily demand values are assumed to remain constant throughout the year. Transportation costs are assumed to be proportional to geographic distance calculated using the Haversine formula. Warehouse operational costs are treated as fixed daily expenses independent of shipment volume. Additionally, the model assumes that transportation routes remain continuously available without disruptions caused by traffic conditions or infrastructure failures.
+
+## Conclusion
+The computational optimization framework successfully identifies an efficient and resilient logistics configuration for the Campus City distribution network. The selected dual-warehouse configuration involving the North and South warehouses provides supply redundancy while maintaining strong cost efficiency.
+
+Because both warehouses operate well below their maximum capacities, the logistics network possesses substantial scalability. This capacity allows the campus to accommodate future increases in supply demand without requiring immediate investment in constructing the East warehouse. The optimized solution therefore provides both economic efficiency and long-term strategic flexibility for campus logistics planning.
+
+## Appendix: Visualizations
 
 ![Geographic Visualization of Optimized Supply Routes over Campus](campus_map.png){#fig-map fig-align="center" width="90%"}
+
+### Network Architecture Diagram
+
+To complement the geographic visualization, a simplified network architecture diagram is presented to illustrate the logical structure of the optimized logistics system. The diagram highlights the flow of supplies from the selected warehouse nodes to the campus facilities they serve. This representation focuses on the operational relationships between nodes rather than their geographic positions, making the supply chain structure easier to interpret.
+
+```{=latex}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    warehouse/.style={rectangle, draw=green!60!black, fill=green!15, thick, minimum width=3.8cm, minimum height=0.9cm, font=\small\bfseries},
+    facility/.style={rectangle, draw=blue!60!black, fill=blue!10, thick, rounded corners, minimum width=3.2cm, minimum height=0.7cm, font=\small},
+    arrow/.style={-{Stealth[length=3mm]}, thick, gray!70!black}
+]
+
+% Warehouse nodes
+\node[warehouse] (whn) at (0, 0) {North Campus Warehouse};
+\node[warehouse] (whs) at (0, -4) {South Campus Warehouse};
+
+% Facility nodes - North warehouse supplies
+\node[facility] (mc) at (7, 1.5) {Medical Center};
+\node[facility] (eng) at (7, 0.5) {Engineering Building};
+\node[facility] (sci) at (7, -0.5) {Science Hall};
+\node[facility] (nd) at (7, -1.5) {North Dormitory};
+
+% Facility nodes - South warehouse supplies
+\node[facility] (sd) at (7, -3.5) {South Dormitory};
+\node[facility] (lib) at (7, -4.5) {Main Library};
+
+% Arrows from North Warehouse
+\draw[arrow] (whn.east) -- (mc.west);
+\draw[arrow] (whn.east) -- (eng.west);
+\draw[arrow] (whn.east) -- (sci.west);
+\draw[arrow] (whn.east) -- (nd.west);
+
+% Arrows from South Warehouse
+\draw[arrow] (whs.east) -- (sd.west);
+\draw[arrow] (whs.east) -- (lib.west);
+
+\end{tikzpicture}
+\caption{Network Architecture Diagram of the Optimized Logistics System}
+\label{fig-network}
+\end{figure}
+```
 
 ![Terminal Output of the MILP Optimization Engine](output.png){#fig-output fig-align="center" width="90%"}

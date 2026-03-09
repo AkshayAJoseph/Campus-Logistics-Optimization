@@ -207,5 +207,6 @@ marimo/_lsp/
 __marimo__/
 
 
-./scripts/visualizer.py
-
+# Project output files
+output/
+src/optimized_campus_map.html

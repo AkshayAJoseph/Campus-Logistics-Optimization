@@ -1,9 +1,17 @@
-import os
+"""Generate campus logistics CSV datasets with Haversine-based transport costs.
+
+Creates facilities, warehouses, and transportation cost CSVs with coordinates
+mapped near Saintgits College, Kerala. Transport costs are dynamically
+calculated using great-circle distances.
+"""
+
 import csv
 import math
+import os
 
-def haversine(lat1, lon1, lat2, lon2):
-    """Calculate the great-circle distance between two points on the Earth surface."""
+
+def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Calculate the great-circle distance between two points on Earth's surface."""
     R = 6371.0  # Radius of the Earth in kilometers
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
